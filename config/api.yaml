@@ -1,0 +1,112 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Audit
+  license:
+    name: MIT
+host: localhost
+basePath: /api/v1
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: x-access-token
+    in: header
+    x-authorize: security/security.js
+    scopes:
+      write: modify in your account
+      read: read your
+paths:
+  /auth:
+    post:
+      summary: authenticate
+      operationId: authenticate
+      tags:
+        - auth
+      parameters:
+        - name: email
+          in: formData
+          required: true
+          type: string
+        - name: password
+          in: formData
+          required: true
+          type: string
+    get:
+      tags:
+        - auth
+      summary: status
+      operationId: status
+  /audits:
+    get:
+      tags:
+        - audits
+      summary: List all
+      operationId: list
+      parameters:
+        - name: entityName
+          in: query
+          required: false
+          type: string
+        - name: entityId
+          in: query
+          required: false
+          type: string
+        - name: property
+          in: query
+          required: false
+          type: string
+    post:
+      tags:
+        - audits
+      summary: post with security
+      operationId: save
+      parameters:
+        - name: audit
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Audit'
+definitions:
+  Audit:
+    type: object
+    properties:
+      entityId:
+        type: string
+      entityName:
+        type: string
+      entityToString:
+        type: string
+      property:
+        type: string
+      oldValue:
+        type: string
+      newValue:
+        type: string
+      operation:
+        type: string
+        enum:
+          - CREATE
+          - UPDATE
+          - REMOVE
+      authorId:
+        type: string
+      authorName:
+        type: string
+      table:
+        type: string
+  Error:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
